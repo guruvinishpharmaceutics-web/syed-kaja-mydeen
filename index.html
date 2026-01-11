@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3D Animated Cursor</title>
+  <style>
+    /* Basic page for demo */
+    :root{--cursor-size:48px}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#0f172a 0%, #071024 100%);color:#e6eef8}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:48px}
+    h1{margin:0;font-weight:600;letter-spacing:-0.02em}
+    p{max-width:720px;text-align:center;opacity:0.85}
+
+    /* Hide native cursor */
+    body, button, a { cursor: none !important; }
+
+    /* The custom cursor */
+    .cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--cursor-size);
+      height: var(--cursor-size);
+      margin-left: calc(var(--cursor-size) * -0.5);
+      margin-top: calc(var(--cursor-size) * -0.5);
+      pointer-events: none;
+      border-radius: 50%;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      will-change: transform, opacity;
+      transition: opacity 300ms ease, transform 200ms cubic-bezier(.2,.9,.2,1);
+      display: grid;
+      place-items: center;
+      z-index: 9999;
+      mix-blend-mode: screen;
+      opacity: 0.98;
+    }
+
+    .cursor__core{
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.25) 25%, rgba(255,255,255,0.05) 45%, transparent 60%);
+      box-shadow: 0 10px 30px rgba(2,6,23,0.7), 0 2px 8px rgba(0,0,0,0.4) inset;
+      transform: translateZ(12px);
+    }
+
+    /* outer ring for depth */
+    .cursor__ring{
+      position:absolute;inset:0;border-radius:50%;
+      outline:1px solid rgba(255,255,255,0.06);
+      transform: translateZ(-6px) scale(1.24);
+      filter: blur(.2px);
+    }
+
+    /* subtle trailing shadow */
+    .cursor__shadow{
+      position:absolute;inset:0;border-radius:50%;
+      transform: translateZ(-18px) scale(1.6);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      opacity:0.45;
+    }
+
+    /* click ripple effect container */
+    .ripples{
+      position:fixed;left:0;top:0;pointer-events:none;z-index:9998;
+    }
+
+    .ripple{
+      position:absolute;border-radius:50%;transform:translate(-50%,-50%) scale(0.15);
+      width:24px;height:24px;background:radial-gradient(circle,#a8d8ff,rgba(168,216,255,0.12));opacity:0.95;backface-visibility:hidden;
+      transition:transform 650ms cubic-bezier(.2,.9,.2,1),opacity 600ms ease;
+      will-change:transform,opacity;
+      box-shadow:0 6px 18px rgba(35,60,110,0.4);
+    }
+
+    /* Demo interactive elements */
+    .btn{
+      background:linear-gradient(180deg,#3b82f6,#1e40af);padding:12px 20px;border-radius:10px;color:white;border:none;font-weight:600;cursor:pointer;box-shadow:0 8px 30px rgba(14,165,233,0.12);
+    }
+
+    a { color: #7dd3fc; text-decoration: none; }
+
+    /* Accessibility: if user has prefer-reduced-motion, disable heavy animations */
+    @media (prefers-reduced-motion: reduce){
+      .cursor, .ripple{transition:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>3D Animated Cursor Demo</h1>
+    <p>Move your mouse to see the 3D cursor follow with tilt and depth. Click to create ripples. Hover the button to see cursor scale. This is a single-file HTML/CSS/JS demo — copy and open locally.</p>
+    <button class="btn">Hover me</button>
+    <p style="opacity:.7;margin-top:18px;font-size:13px">Tip: Press Esc to show the native cursor again.</p>
+  </div>
+
+  <!-- Custom cursor HTML structure -->
+  <div class="cursor" id="cursor">
+    <div class="cursor__ring"></div>
+    <div class="cursor__core"></div>
+    <div class="cursor__shadow"></div>
+  </div>
+
+  <div class="ripples" id="ripples"></div>
+
+  <script>
+    // Smooth 3D cursor with tilt and click ripples
+    (function(){
+      const cursor = document.getElementById('cursor');
+      const ripples = document.getElementById('ripples');
+      let mouse = { x: window.innerWidth/2, y: window.innerHeight/2 };
+      let pos = { x: mouse.x, y: mouse.y };
+      let vel = { x: 0, y: 0 };
+
+      // Lerp helper
+      function lerp(a,b,n){return (1-n)*a + n*b}
+
+      // Track movement & velocity
+      window.addEventListener('mousemove', (e)=>{
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      }, {passive:true});
+
+      // Hide cursor when mouse leaves window
+      window.addEventListener('mouseout', ()=> cursor.style.opacity = '0');
+      window.addEventListener('mouseover', ()=> cursor.style.opacity = '0.98');
+
+      // Scale cursor when hovering interactive elements
+      const interactiveSelector = 'a, button, input, textarea, label, .btn';
+      document.addEventListener('mouseover', (e)=>{
+        if (e.target.closest(interactiveSelector)){
+          cursor.style.transition = 'transform 180ms cubic-bezier(.2,.9,.2,1)';
+          cursor.style.transform += ' scale(1.6)';
+        }
+      });
+      document.addEventListener('mouseout', (e)=>{
+        if (e.target.closest(interactiveSelector)){
+          // reset transform entirely (the RAF loop will handle position/tilt)
+          cursor.style.transform = '';
+        }
+      });
+
+      // Create ripple on click
+      window.addEventListener('mousedown', (e)=>{
+        createRipple(e.clientX, e.clientY);
+      });
+
+      function createRipple(x,y){
+        const r = document.createElement('div');
+        r.className = 'ripple';
+        r.style.left = x + 'px';
+        r.style.top = y + 'px';
+        ripples.appendChild(r);
+        // Force layout then animate
+        requestAnimationFrame(()=>{
+          r.style.transform = 'translate(-50%,-50%) scale(6)';
+          r.style.opacity = '0';
+        });
+        // cleanup
+        setTimeout(()=> r.remove(), 700);
+      }
+
+      // Animation loop
+      function animate(){
+        // smooth position
+        pos.x = lerp(pos.x, mouse.x, 0.18);
+        pos.y = lerp(pos.y, mouse.y, 0.18);
+
+        // velocity (used to scale / tilt)
+        vel.x = mouse.x - pos.x;
+        vel.y = mouse.y - pos.y;
+
+        // compute tilt based on movement
+        const tiltX = Math.max(Math.min(-vel.y * 0.08, 18), -18); // rotateX
+        const tiltY = Math.max(Math.min(vel.x * 0.08, 18), -18);   // rotateY
+
+        // subtle scale depending on speed
+        const speed = Math.min(Math.hypot(vel.x, vel.y) * 0.02, 1.7);
+        const scale = 1 + Math.min(speed, 0.8);
+
+        // apply transform with translate3d for GPU acceleration
+        const tx = pos.x;
+        const ty = pos.y;
+        cursor.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(${scale})`;
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      // Accessibility: press Escape to restore native cursor
+      window.addEventListener('keydown', (e)=>{
+        if (e.key === 'Escape'){
+          document.body.style.cursor = 'auto';
+          cursor.style.display = 'none';
+        }
+      });
+
+      // Resize handler
+      window.addEventListener('resize', ()=>{
+        // keep reasonable defaults if user resizes
+      });
+
+    })();
+  </script>
+</body>
+</html>
+

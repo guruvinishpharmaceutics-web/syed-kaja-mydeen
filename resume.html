@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium 3D Flipbook Resume</title>
+<style>
+:root{
+  --bg:#0b1220;
+  --paper:#fdf9f3;
+  --glass:rgba(255,255,255,0.12);
+  --shadow:rgba(0,0,0,0.5);
+  --gold:#d09b57;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle at center,#071427 0%,#0b1220 100%);
+  font-family:'Georgia', serif;
+  overflow:hidden;
+}
+.book-wrap{width:min(980px,94vw);aspect-ratio:16/10;perspective:2600px;position:relative;}
+.book{width:100%;height:100%;position:relative;transform-style:preserve-3d;}
+.page{
+  position:absolute;
+  top:0; left:0;
+  width:50%; height:100%;
+  transform-origin:left center;
+  border-radius:12px; overflow:hidden;
+  backface-visibility:hidden;
+  box-shadow:0 20px 60px var(--shadow);
+  transition: transform 1.8s cubic-bezier(.2,.85,.25,1), box-shadow 0.5s ease;
+  background:var(--paper);
+  z-index:var(--z,1);
+}
+.page .surface{position:absolute;inset:0;background-image:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));mix-blend-mode:multiply;}
+.page .glass-sheen{position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 30%, transparent 60%);backdrop-filter: blur(6px) saturate(140%);}
+.cover{background:#111;display:flex;align-items:center;justify-content:center;}
+.cover .cover-img{position:absolute;inset:0;background-position:center;background-size:cover;filter:contrast(1.05) saturate(1.1);}
+.cover .cover-overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(8,10,12,0.25), rgba(0,0,0,0.3));}
+.cover .title{position:absolute;left:28px;bottom:28px;color:white;text-shadow:0 6px 20px rgba(0,0,0,.6);}
+.cover h1{margin:0;font-size:34px;letter-spacing:0.6px;}
+.cover p{margin:6px 0 0;opacity:.9;}
+.content{position:relative;padding:36px 40px;}
+.h1{font-size:20px;color:var(--gold);margin:0 0 8px;}
+.lead{font-size:14px;color:#444;margin:0 0 12px;}
+.list{margin:8px 0 0;padding-left:18px;}
+.page.flipped{transform:rotateY(-180deg) rotateX(1deg);box-shadow:0 10px 40px var(--shadow);}
+.page::after{content:'';position:absolute;top:0;right:-14px;width:30px;height:100%;pointer-events:none;background:linear-gradient(90deg, rgba(0,0,0,0.12), rgba(0,0,0,0));transform:skewX(-10deg);}
+.inner-edge{position:absolute;top:0;right:0;width:8px;height:100%;background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));}
+.controls{position:absolute;right:18px;bottom:18px;display:flex;gap:10px;z-index:120;}
+.btn{background:linear-gradient(180deg,#fff,#f0efe7);border-radius:999px;padding:10px 14px;border:none;cursor:pointer;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.3);}
+.btn:active{transform:translateY(1px);}
+.hint{position:absolute;left:18px;bottom:26px;color:rgba(255,255,255,.6);font-size:13px;}
+/* Skill bars */
+.skill-bar{margin:12px 0;background:rgba(0,0,0,0.08);border-radius:8px;height:18px;overflow:hidden;position:relative;}
+.skill-fill{height:100%;width:0%;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:right;padding-right:6px;color:white;font-size:12px;font-weight:600;transition: width 1.5s ease-in-out;}
+</style>
+</head>
+<body>
+<div class="book-wrap">
+  <div class="book" id="book">
+    <!-- Front Cover -->
+    <section class="page cover" style="--z:6">
+      <div class="cover-img" style="background-image:url('WhatsApp Image 2025-10-10 at 9.32.38 PM.jpeg')"></div>
+      <div class="cover-overlay"></div>
+      <div class="glass-sheen"></div>
+      <div class="title"><h1>K.syed kaja mydeen</h1><p>Full stack developer • UI/UX • JavaScript</p></div>
+    </section>
+    <!-- About Me -->
+    <section class="page" style="--z:5">
+      <div class="surface"></div><div class="glass-sheen"></div><div class="inner-edge"></div>
+      <div class="content"><div class="h1">About Me</div>
+      <p class="lead">I am a dedicated computer engineering  student seeking a stable position in a growth oriented organization .MY goal is to continously improve my technical skils and knowledge .I am eager to apply my abilites to solve real-world challenges.I aim to contibutes effectively to the organization's success and long-term developments. 
+       <div class="h1">Eduation</div>
+
+State board
+
+Completed Higher Secondary Education at St. Mary's Higher Secondary School, tirunelveli (2020-2022) with 85.8% under State Board. This strong academic foundation has helped me build discipline and technical learning skills. It also strengthened my interest in pursuing Computer Science and Engineering.
+
+B.E. Computer Science and Engineering
+
+Pursuing Bachelor of Engineering (B.E.) in Computer Science and Engineering at PSN Institute of Technology. Tirunelveli, affiliated to Anna University (2022-2026).
+
+      </p>
+    </section>
+    <!-- Experience -->
+    <section class="page" style="--z:4">
+      <div class="surface"></div><div class="glass-sheen"></div><div class="inner-edge"></div>
+      <div class="content"><div class="h1">certificates</div>
+       <p> Awards and learning</p>
+        <p>Vocational education certificate</p>
+         <p>Automotive skills Development council</p>
+          <p>Complete the internship in smackcoder for web development</p>
+           <p>Python programming internship in the web maker</p>
+            <p> Web Development in Technovision</p>
+              <p>Python course (workshop)</p>
+              <p>internship in web development</p>
+              <p>Workshop in web development</p>
+      </div>
+    </section>
+    <!-- Skills -->
+    <section class="page" style="--z:3">
+      <div class="surface"></div><div class="glass-sheen"></div><div class="inner-edge"></div>
+      <div class="content"><div class="h1">Skills</div>
+        <div>React.js</div><div class="skill-bar"><div class="skill-fill" data-level="95">95%</div></div>
+        <div>Python</div><div class="skill-bar"><div class="skill-fill" data-level="90">90%</div></div>
+        <div>Node.js</div><div class="skill-bar"><div class="skill-fill" data-level="88">88%</div></div>
+        <div>C Programming</div><div class="skill-bar"><div class="skill-fill" data-level="85">85%</div></div>
+        <div>MySQL</div><div class="skill-bar"><div class="skill-fill" data-level="65">65%</div></div>
+        <div>front-end</div><div class="skill-bar"><div class="skill-fill" data-level="95">95%</div></div>
+       
+      </div>
+    </section>
+    <!-- Contact -->
+    <section class="page" style="--z:2">
+      <div class="surface"></div><div class="glass-sheen"></div><div class="inner-edge"></div>
+      <div class="content"><div class="h1">Contact</div>
+      <p class="lead">Email: <strong>kajamydeen070@gmail.com</strong></p>
+     <p class="lead">Phone: <strong>+91-9003-852868</strong></p></div> 
+     
+    </section>
+  </div>
+  <div class="controls">
+    <div class="hint">Use ← → keys or click</div>
+    <button class="btn" id="prev">◀ Prev</button>
+    <button class="btn" id="next">Next ▶</button>
+  </div>
+</div>
+<script>
+const pages = Array.from(document.querySelectorAll('.book .page'));
+const next = document.getElementById('next');
+const prev = document.getElementById('prev');
+let index = 0;
+let isAnimating = false;
+
+function updateButtons(){
+  prev.disabled = index===0;
+  next.disabled = index>=pages.length;
+}
+
+function animateSkills(page){
+  const skillFills = page.querySelectorAll('.skill-fill');
+  skillFills.forEach(fill=>{
+    fill.style.width = fill.dataset.level+'%';
+  });
+}
+
+function flipNext(){
+  if(index >= pages.length || isAnimating) return;
+  isAnimating = true;
+  const p = pages[index];
+  p.classList.add('flipped');
+  index++;
+  updateButtons();
+  p.addEventListener('transitionend', () => {
+    if(p.querySelector('.skill-fill')) animateSkills(p);
+    // Animate next page immediately if it's Skills page (in case user flips fast)
+    const nextPage = pages[index];
+    if(nextPage && nextPage.querySelector('.skill-fill')) animateSkills(nextPage);
+    isAnimating = false;
+  }, {once:true});
+}
+
+function flipPrev(){
+  if(index<=0 || isAnimating) return;
+  isAnimating = true;
+  index--;
+  const p = pages[index];
+  p.classList.remove('flipped');
+  updateButtons();
+  p.addEventListener('transitionend', () => {
+    if(p.querySelector('.skill-fill')) animateSkills(p);
+    isAnimating = false;
+  }, {once:true});
+}
+
+// Animate Skills page if it is initially visible (e.g., first flip to it)
+pages.forEach((page, i)=>{
+  if(page.querySelector('.skill-fill') && i === index) animateSkills(page);
+});
+
+next.addEventListener('click', flipNext);
+prev.addEventListener('click', flipPrev);
+
+document.querySelector('.book-wrap').addEventListener('click', e=>{
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  if(x>rect.width*0.55) flipNext();
+  else if(x<rect.width*0.45) flipPrev();
+});
+
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') flipNext();
+  if(e.key==='ArrowLeft') flipPrev();
+});
+
+
+
+</script>
+</body>
+</html>
+
+
